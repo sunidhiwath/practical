@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE 5
+
+int buffer[BUFFER_SIZE];
+int in = 0, out = 0;
+
+sem_t empty, full, mutex;
+
+// Producer function
+void *producer(void *arg)
+{
+    int item;
+    for(int i = 0; i < 10; i++)
+    {
+        item = rand() % 100;
+
+        sem_wait(&empty);
+        sem_wait(&mutex);
+
+        buffer[in] = item;
+        printf("Producer produced: %d at position %d\n", item, in);
+        in = (in + 1) % BUFFER_SIZE;
+
+        sem_post(&mutex);
+        sem_post(&full);
+
+        sleep(1);
+    }
+}
+
+// Consumer function
+void *consumer(void *arg)
+{
+    int item;
+    for(int i = 0; i < 10; i++)
+    {
+        sem_wait(&full);
+        sem_wait(&mutex);
+
+        item = buffer[out];
+        printf("Consumer consumed: %d from position %d\n", item, out);
+        out = (out + 1) % BUFFER_SIZE;
+
+        sem_post(&mutex);
+        sem_post(&empty);
+
+        sleep(2);
+    }
+}
+
+int main()
+{
+    pthread_t p, c;
+
+    sem_init(&empty, 0, BUFFER_SIZE);
+    sem_init(&full, 0, 0);
+    sem_init(&mutex, 0, 1);
+
+    pthread_create(&p, NULL, producer, NULL);
+    pthread_create(&c, NULL, consumer, NULL);
+
+    pthread_join(p, NULL);
+    pthread_join(c, NULL);
+
+    sem_destroy(&empty);
+    sem_destroy(&full);
+    sem_destroy(&mutex);
+
+    return 0;
+}
+
+i/p
+gcc producer_consumer.c -o pc -lpthread
+./pc
+o/p
+Producer produced: 45 at position 0
+Producer produced: 12 at position 1
+Consumer consumed: 45 from position 0
+Producer produced: 78 at position 2
+Consumer consumed: 12 from position 1
+Producer produced: 34 at position 3
+Consumer consumed: 78 from position 2
+...
