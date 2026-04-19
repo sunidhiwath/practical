@@ -1,0 +1,155 @@
+2) file allocation
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 50
+
+// Sequential Allocation
+void sequential() {
+    int blocks[MAX], start, length, i, flag = 0, n;
+
+    printf("\nEnter total number of blocks: ");
+    scanf("%d", &n);
+
+    printf("Enter block status (0 = free, 1 = allocated):\n");
+    for(i = 0; i < n; i++)
+        scanf("%d", &blocks[i]);
+
+    printf("Enter starting block: ");
+    scanf("%d", &start);
+
+    printf("Enter length of file: ");
+    scanf("%d", &length);
+
+    for(i = start; i < start + length; i++) {
+        if(blocks[i] == 1) {
+            flag = 1;
+            break;
+        }
+    }
+
+    if(flag == 0) {
+        printf("File allocated using Sequential Allocation at blocks:\n");
+        for(i = start; i < start + length; i++) {
+            printf("%d ", i);
+            blocks[i] = 1;
+        }
+    } else {
+        printf("Sequential Allocation not possible.\n");
+    }
+}
+
+// Linked Allocation
+void linked() {
+    int blocks[MAX], n, start, i, next;
+
+    printf("\nEnter total number of blocks: ");
+    scanf("%d", &n);
+
+    printf("Enter block status (0 = free, 1 = allocated):\n");
+    for(i = 0; i < n; i++)
+        scanf("%d", &blocks[i]);
+
+    printf("Enter starting block: ");
+    scanf("%d", &start);
+
+    if(blocks[start] == 1) {
+        printf("Block already allocated.\n");
+        return;
+    }
+
+    printf("Linked Allocation Blocks:\n");
+    printf("%d ", start);
+    blocks[start] = 1;
+
+    while(1) {
+        printf("\nEnter next block (-1 to end): ");
+        scanf("%d", &next);
+
+        if(next == -1)
+            break;
+
+        if(blocks[next] == 1) {
+            printf("Block already allocated. Try again.\n");
+        } else {
+            printf("%d ", next);
+            blocks[next] = 1;
+        }
+    }
+}
+
+// Indexed Allocation
+void indexed() {
+    int blocks[MAX], indexBlock, n, i, count, block;
+
+    printf("\nEnter total number of blocks: ");
+    scanf("%d", &n);
+
+    printf("Enter block status (0 = free, 1 = allocated):\n");
+    for(i = 0; i < n; i++)
+        scanf("%d", &blocks[i]);
+
+    printf("Enter index block: ");
+    scanf("%d", &indexBlock);
+
+    if(blocks[indexBlock] == 1) {
+        printf("Index block already allocated.\n");
+        return;
+    }
+
+    printf("Enter number of blocks needed: ");
+    scanf("%d", &count);
+
+    printf("Enter blocks for file:\n");
+    for(i = 0; i < count; i++) {
+        scanf("%d", &block);
+
+        if(blocks[block] == 1) {
+            printf("Block already allocated.\n");
+        } else {
+            blocks[block] = 1;
+        }
+    }
+
+    blocks[indexBlock] = 1;
+
+    printf("File allocated using Indexed Allocation.\n");
+    printf("Index Block: %d\n", indexBlock);
+}
+
+int main() {
+    int choice;
+
+    do {
+        printf("\n--- File Allocation Techniques ---\n");
+        printf("1. Sequential Allocation\n");
+        printf("2. Linked Allocation\n");
+        printf("3. Indexed Allocation\n");
+        printf("4. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1: sequential(); break;
+            case 2: linked(); break;
+            case 3: indexed(); break;
+            case 4: printf("Exiting...\n"); break;
+            default: printf("Invalid choice!\n");
+        }
+
+    } while(choice != 4);
+
+    return 0;
+}
+
+i/p
+Enter your choice: 1
+Enter total number of blocks: 5
+Enter block status:
+0 0 1 0 0
+Enter starting block: 0
+Enter length of file: 2
+o/p
+File allocated using Sequential Allocation at blocks:
+0 1
