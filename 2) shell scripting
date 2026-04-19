@@ -1,0 +1,138 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int choice, a, b;
+    char filename[50];
+    FILE *fp;
+    char data[100];
+
+    while(1) {
+        printf("\n--- MENU ---\n");
+        printf("1. Create & Write File\n");
+        printf("2. Read File\n");
+        printf("3. Basic Calculation\n");
+        printf("4. Execute System Command\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+
+        case 1:
+            printf("Enter file name: ");
+            scanf("%s", filename);
+
+            fp = fopen(filename, "w");
+            if(fp == NULL) {
+                printf("Error creating file\n");
+                break;
+            }
+
+            printf("Enter data to write: ");
+            scanf(" %[^\n]", data);
+
+            fprintf(fp, "%s", data);
+            fclose(fp);
+
+            printf("File created and written successfully!\n");
+            break;
+
+        case 2:
+            printf("Enter file name: ");
+            scanf("%s", filename);
+
+            fp = fopen(filename, "r");
+            if(fp == NULL) {
+                printf("File not found\n");
+                break;
+            }
+
+            printf("File content:\n");
+            while(fgets(data, sizeof(data), fp)) {
+                printf("%s", data);
+            }
+            fclose(fp);
+            break;
+
+        case 3:
+            printf("Enter two numbers: ");
+            scanf("%d %d", &a, &b);
+
+            printf("Sum = %d\n", a + b);
+            printf("Difference = %d\n", a - b);
+            printf("Product = %d\n", a * b);
+            if(b != 0)
+                printf("Division = %d\n", a / b);
+            else
+                printf("Division not possible\n");
+            break;
+
+        case 4:
+            printf("Executing 'ls' or 'dir' command...\n");
+
+            #ifdef _WIN32
+                system("dir");
+            #else
+                system("ls");
+            #endif
+
+            break;
+
+        case 5:
+            exit(0);
+
+        default:
+            printf("Invalid choice\n");
+        }
+    }
+
+    return 0;
+}
+
+i/p
+1
+test.txt
+Hello this is my file
+2
+test.txt
+5
+
+o/p
+--- MENU ---
+1. Create & Write File
+2. Read File
+3. Basic Calculation
+4. Execute System Command
+5. Exit
+Enter your choice: 1
+Enter file name: test.txt
+Enter data to write: Hello this is my file
+File created and written successfully!
+
+--- MENU ---
+Enter your choice: 2
+Enter file name: test.txt
+File content:
+Hello this is my file
+
+--- MENU ---
+Enter your choice: 5
+
+
+
+i/p
+3
+10 5
+5
+o/p
+--- MENU ---
+Enter your choice: 3
+Enter two numbers: 10 5
+Sum = 15
+Difference = 5
+Product = 50
+Division = 2
+
+--- MENU ---
+Enter your choice: 5
